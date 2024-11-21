@@ -22,7 +22,7 @@ def checkLogin(username, password):
     
     if result is None:
         return False
-    
+    print(result)
     stored_password = result[0]
     print(stored_password)
     return stored_password == password
