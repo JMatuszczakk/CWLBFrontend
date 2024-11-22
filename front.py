@@ -1,5 +1,6 @@
 import streamlit as st
 import psycopg2
+import time
 st.title("CWL Bełchatów")
 
 if "stage" not in st.session_state:
@@ -9,7 +10,7 @@ def checkLogin(username, password):
     #TODO
     #create a connection to postgresql to check the username and password hash to login to dashboard
     con = psycopg2.connect(
-        host="cwlb.matuszczak.org",
+        host="central",
         database="cwl1",
         user="postgres",
         password="cwlbełchatów"
@@ -24,16 +25,23 @@ def checkLogin(username, password):
         return False
     print(result)
     stored_password = result[0]
-    print(stored_password)
+    #print(stored_password)
     return stored_password == password
 
-    return True
+    
 
 if st.session_state['stage'] == 0:
     with st.form("dd"):
         username = st.text_input("Nazwa użytkownika")
         password = st.text_input("Hasło", type='password')
         if st.form_submit_button("Zaloguj"):
-            print(checkLogin(username, password))
+            if checkLogin(username, password):
+                st.success("Zalogowano")
+                st.session_state['stage'] = 1
+                time.sleep(1)
+                st.rerun()
+            else:
+                st.error("Niepoprawne dane logowania")
+
 
 
