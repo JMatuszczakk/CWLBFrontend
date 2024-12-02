@@ -2,6 +2,9 @@ import streamlit as st
 import psycopg2
 import time
 import hashlib
+from streamlit_option_menu import option_menu
+import pandas
+
 st.title("CWL Bełchatów")
 
 
@@ -58,35 +61,38 @@ if st.session_state['stage'] == 0:
                 st.error("Niepoprawne dane logowania")
 
 if st.session_state['stage'] == 1:
-    st.title("CWL Bełchatów - Panel")
-    st.success("Zalogowano", icon="🔒")
-    con = psycopg2.connect(
-        host="central",
-        database="cwl1",
-        user="postgres",
-        password="cwlbełchatów"
-    )
-    cur = con.cursor()
-    cur.execute("SELECT id, name, race, color, photo, number, illnesses FROM dogs")
-    rows = cur.fetchall()
-    con.close()
+    with st.sidebar:
+        selected = option_menu("CWLB", ["Lista zwierząt", 'Dodaj zwierzę', 'Usuń zwierzę', 'Dodaj użytkownika'], 
+        icons=['card-list', 'plus-lg', 'x-lg', 'person-plus'], menu_icon="cast", default_index=0)
+    if selected == "Lista zwierząt":
+        
+        con = psycopg2.connect(
+            host="central",
+            database="cwl1",
+            user="postgres",
+            password="cwlbełchatów"
+        )
+        cur = con.cursor()
+        cur.execute("SELECT id, name, race, color, photo, number, illnesses FROM dogs")
+        rows = cur.fetchall()
+        con.close()
 
-    for row in rows:
-        st.write(f"ID: {row[0]}")
-        st.write(f"Nazwa: {row[1]}")
-        st.write(f"Rasa: {row[2]}")
-        st.write(f"Kolor: {row[3]}")
-        st.write(f"Numer: {row[5]}")
-        st.write(f"Choroby: {row[6]}")
-        st.write("---")
-    
+        df = pandas.DataFrame(rows, columns=["ID", "Imię", "Rasa", "Kolor", "Zdjęcie", "Numer", "Choroby"])
+        df['Zdjęcie'] = df['Zdjęcie'].apply(lambda x: f'<img src="{x}" width="100">' if x != 'brak' else 'brak')
+        #convert df to html
+        print(df.to_html(escape=False, index=False))
+        st.write(df.to_html(escape=False, index=False), unsafe_allow_html=True)
+    elif selected == "Dodaj użytkownika":
 
-    with st.form("registeruser"):
-        username = st.text_input("Nazwa użytkownika")
-        password = st.text_input("Hasło", type='password')
-        if st.form_submit_button("Zarejestruj"):
-            registerWithHash(username, password)
-            st.success("Zarejestrowano")
-            time.sleep(1)
-            st.rerun()
+
+        with st.form("registeruser"):
+            username = st.text_input("Nazwa użytkownika")
+            password = st.text_input("Hasło", type='password')
+            if st.form_submit_button("Zarejestruj"):
+                registerWithHash(username, password)
+                st.success("Zarejestrowano")
+                time.sleep(1)
+                st.rerun()
+
+        
 
