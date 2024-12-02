@@ -62,7 +62,7 @@ if st.session_state['stage'] == 0:
 
 if st.session_state['stage'] == 1:
     with st.sidebar:
-        selected = option_menu("CWLB", ["Lista zwierząt", 'Dodaj zwierzę', 'Usuń zwierzę', 'Dodaj użytkownika'], 
+        selected = option_menu("CWLB", ["Lista zwierząt", 'Dodaj zwierzę', 'Usuń zwierzę', 'Dodaj użytkownika', 'Zmień dizajn'], 
         icons=['card-list', 'plus-lg', 'x-lg', 'person-plus'], menu_icon="cast", default_index=0)
     if selected == "Lista zwierząt":
         
@@ -93,6 +93,15 @@ if st.session_state['stage'] == 1:
                 st.success("Zarejestrowano")
                 time.sleep(1)
                 st.rerun()
-
+    elif selected == "Zmień dizajn":
+        #get long text from user and put it in ./.streamlit/config.toml
+        with st.form("config"):
+            config = st.text_area("Wprowadź konfigurację")
+            if st.form_submit_button("Zapisz"):
+                with open("./.streamlit/config.toml", "w") as f:
+                    f.write(config)
+                st.success("Zapisano")
+                time.sleep(1)
+                st.rerun()
         
 
