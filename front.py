@@ -95,13 +95,37 @@ if st.session_state['stage'] == 1:
                 st.rerun()
     elif selected == "Zmień dizajn":
         #get long text from user and put it in ./.streamlit/config.toml
-        with st.form("config"):
-            config = st.text_area("Wprowadź konfigurację")
-            if st.form_submit_button("Zapisz"):
-                with open("./.streamlit/config.toml", "w") as f:
-                    f.write(config)
-                st.success("Zapisano")
-                time.sleep(1)
-                st.rerun()
+        
+    #if long text is empty, show colour pickers for primaryColor, backgroundColor, secondaryBackgroundColor, textColor
+        st.write("Wybierz kolory")
+        col1, col2 = st.columns(2)
+        with col1:
+            primaryColor = st.color_picker("Kolor główny", "#ff0000")
+            backgroundColor = st.color_picker("Kolor tła", "#ffffff")
+        with col2:
+            secondaryBackgroundColor = st.color_picker("Kolor tła drugoplanowego", "#f0f0f0")
+            textColor = st.color_picker("Kolor tekstu", "#000000")
+    # compile the colors into a string like this:
+#         """
+#         [theme]
+# primaryColor="#575366"
+# backgroundColor="#6e7dab"
+# secondaryBackgroundColor="#929226"
+# textColor="#32292f"""
+#and put it in ./.streamlit/config.toml
+    config = f"""
+[theme]
+primaryColor="{primaryColor}"
+backgroundColor="{backgroundColor}"
+secondaryBackgroundColor="{secondaryBackgroundColor}"
+textColor="{textColor}"
+    """
+    if st.button("Zapisz"):
+        with open("./.streamlit/config.toml", "w") as f:
+            f.write(config)
+        st.success("Zapisano")
+        time.sleep(1)
+        st.rerun()
+    
         
 
