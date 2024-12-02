@@ -96,7 +96,7 @@ if st.session_state['stage'] == 1:
     elif selected == "Zmień dizajn":
         #get long text from user and put it in ./.streamlit/config.toml
         
-    #if long text is empty, show colour pickers for primaryColor, backgroundColor, secondaryBackgroundColor, textColor
+        #if long text is empty, show colour pickers for primaryColor, backgroundColor, secondaryBackgroundColor, textColor
         st.write("Wybierz kolory")
         col1, col2 = st.columns(2)
         with col1:
@@ -105,7 +105,7 @@ if st.session_state['stage'] == 1:
         with col2:
             secondaryBackgroundColor = st.color_picker("Kolor tła drugoplanowego", "#f0f0f0")
             textColor = st.color_picker("Kolor tekstu", "#000000")
-    # compile the colors into a string like this:
+        # compile the colors into a string like this:
 #         """
 #         [theme]
 # primaryColor="#575366"
@@ -113,19 +113,19 @@ if st.session_state['stage'] == 1:
 # secondaryBackgroundColor="#929226"
 # textColor="#32292f"""
 #and put it in ./.streamlit/config.toml
-    config = f"""
+        config = f"""
 [theme]
 primaryColor="{primaryColor}"
 backgroundColor="{backgroundColor}"
 secondaryBackgroundColor="{secondaryBackgroundColor}"
 textColor="{textColor}"
-    """
-    if st.button("Zapisz"):
-        with open("./.streamlit/config.toml", "w") as f:
-            f.write(config)
-        st.success("Zapisano")
-        time.sleep(1)
-        st.rerun()
+        """
+        if st.button("Zapisz"):
+            with open("./.streamlit/config.toml", "w") as f:
+                f.write(config)
+            st.success("Zapisano")
+            time.sleep(1)
+            st.rerun()
     
         
 
