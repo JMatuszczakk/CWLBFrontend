@@ -4,6 +4,7 @@ import time
 import hashlib
 from streamlit_option_menu import option_menu
 import pandas
+import toml
 
 st.title("CWL Bełchatów")
 
@@ -99,12 +100,26 @@ if st.session_state['stage'] == 1:
         #if long text is empty, show colour pickers for primaryColor, backgroundColor, secondaryBackgroundColor, textColor
         st.write("Wybierz kolory")
         col1, col2 = st.columns(2)
+        # Load existing config if available
+        try:
+            with open("./.streamlit/config.toml", "r") as f:
+                config_data = toml.load(f)
+                primaryColor = config_data["theme"].get("primaryColor", "#ff0000")
+                backgroundColor = config_data["theme"].get("backgroundColor", "#ffffff")
+                secondaryBackgroundColor = config_data["theme"].get("secondaryBackgroundColor", "#f0f0f0")
+                textColor = config_data["theme"].get("textColor", "#000000")
+        except FileNotFoundError:
+            primaryColor = "#ff0000"
+            backgroundColor = "#ffffff"
+            secondaryBackgroundColor = "#f0f0f0"
+            textColor = "#000000"
+
         with col1:
-            primaryColor = st.color_picker("Kolor główny", "#ff0000")
-            backgroundColor = st.color_picker("Kolor tła", "#ffffff")
+            primaryColor = st.color_picker("Kolor główny", primaryColor)
+            backgroundColor = st.color_picker("Kolor tła", backgroundColor)
         with col2:
-            secondaryBackgroundColor = st.color_picker("Kolor tła drugoplanowego", "#f0f0f0")
-            textColor = st.color_picker("Kolor tekstu", "#000000")
+            secondaryBackgroundColor = st.color_picker("Kolor tła drugoplanowego", secondaryBackgroundColor)
+            textColor = st.color_picker("Kolor tekstu", textColor)
         # compile the colors into a string like this:
 #         """
 #         [theme]
@@ -126,6 +141,7 @@ textColor="{textColor}"
             st.success("Zapisano")
             time.sleep(1)
             st.rerun()
+
         if st.button("Pobierz lokalny plik"):
             st.download_button("Pobierz plik", config, "config.toml", "toml")
     
