@@ -126,6 +126,8 @@ textColor="{textColor}"
             st.success("Zapisano")
             time.sleep(1)
             st.rerun()
+        if st.button("Pobierz lokalny plik"):
+            st.download_button("Pobierz plik", config, "config.toml", "toml")
     
         
 
