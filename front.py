@@ -30,6 +30,76 @@ def checkLogin(username, password):
     passwordHash = hashlib.sha256(password.encode()).hexdigest()
     return stored_password == passwordHash
 
+def dodaj_zwierze():
+    st.header("Dodaj nowe zwierzę")
+    name = st.text_input("Nazwa zwierzęcia")
+    species = st.text_input("Gatunek")
+    age = st.number_input("Wiek", min_value=0)
+    race = st.text_input("Rasa")
+    color = st.text_input("Kolor")
+    photo = st.text_input("Zdjęcie")
+    number = st.text_input("Numer")
+    illnesses = st.text_input("Choroby")
+
+    submit = st.button("Dodaj zwierzę")
+    
+    if submit:
+        # insert into database
+        con = psycopg2.connect(
+            host="central",
+            database="cwl1",
+            user="postgres",
+            password="cwlbełchatów"
+        )
+        cur = con.cursor()
+        #table rows: "id"	"name"	"race"	"color"	"photo"	"number" "illnesses"
+        cur.execute("INSERT INTO dogs (name, race, color, photo, number, illnesses) VALUES (%s, %s, %s, %s, %s, %s)", (name, race, color, photo, number, illnesses))
+        con.commit()
+        con.close()
+        st.success(f"Zwierzę {name} zostało dodane pomyślnie!")
+
+def usun_zwierze():
+    st.header("Usuń zwierzę")
+    # Connect to the database
+    con = psycopg2.connect(
+        host="central",
+        database="cwl1",
+        user="postgres",
+        password="cwlbełchatów"
+    )
+    cur = con.cursor()
+    # Fetch all animals' IDs and names
+    cur.execute("SELECT id, name FROM dogs")
+    rows = cur.fetchall()
+    con.close()
+
+    # Create a dataframe
+    df = pandas.DataFrame(rows, columns=["ID", "Imię"])
+
+    # Create a selection box
+    animal_options = df['ID'].astype(str) + " - " + df['Imię']
+    selected_animal = st.selectbox("Wybierz zwierzę do usunięcia", animal_options)
+
+    # Delete the selected animal
+    if st.button("Usuń zwierzę"):
+        # Extract the selected animal's ID
+        animal_id = int(selected_animal.split(" - ")[0])
+        # Connect to the database
+        con = psycopg2.connect(
+            host="central",
+            database="cwl1",
+            user="postgres",
+            password="cwlbełchatów"
+        )
+        cur = con.cursor()
+        # Delete the animal from the database
+        cur.execute("DELETE FROM dogs WHERE id = %s", (animal_id,))
+        con.commit()
+        con.close()
+        st.success("Zwierzę zostało usunięte pomyślnie!")
+        time.sleep(1)
+        st.rerun()
+
 def registerWithHash(username, password):
     con = psycopg2.connect(
         host="central",
@@ -131,7 +201,12 @@ if st.session_state['stage'] == 1:
         icons=['card-list', 'plus-lg', 'x-lg', 'person-plus'], menu_icon="cast", default_index=0)
     if selected == "Lista zwierząt":
         animal_list()
+    elif selected == "Dodaj zwierzę":
+        dodaj_zwierze()
+    elif selected == "Usuń zwierzę":
+        usun_zwierze()
     elif selected == "Dodaj użytkownika":
         register_user_form()
     elif selected == "Zmień dizajn":
         change_design()
+

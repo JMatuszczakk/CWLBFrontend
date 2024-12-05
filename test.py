@@ -5,13 +5,10 @@ import os
 from unittest.mock import patch, MagicMock
 
 def hash_password(password):
-    """Helper function to hash password using SHA-256"""
     return hashlib.sha256(password.encode()).hexdigest()
 
 def test_password_hashing():
-    """
-    Test that password hashing works correctly
-    """
+
     
     password = "testpassword123"
     
@@ -26,9 +23,7 @@ def test_password_hashing():
     assert expected_hash != hash_password(different_password)
 
 def test_check_login():
-    """
-    Test login verification functionality
-    """
+
     def mock_check_login(username, password):
         """
         Simulated login check function
@@ -55,9 +50,7 @@ def test_check_login():
     assert mock_check_login("nonexistentuser", "anypassword") is False
 
 def test_config_file_generation():
-    """
-    Test configuration file generation
-    """
+
     
     primary_color = "#ff0000"
     background_color = "#ffffff"
@@ -85,9 +78,7 @@ textColor="{text_color}"
     assert theme['textColor'] == text_color
 
 def test_animal_list_dataframe_conversion():
-    """
-    Test the animal list conversion to DataFrame
-    """
+
     import pandas
 
     
@@ -111,9 +102,7 @@ def test_animal_list_dataframe_conversion():
     assert df.loc[1, 'Zdjęcie'] == 'brak'
 
 def test_user_registration_data_validation():
-    """
-    Test user registration data validation
-    """
+
     def validate_username(username):
         """
         Validate username criteria
@@ -131,9 +120,7 @@ def test_user_registration_data_validation():
         )
     
     def validate_password(password):
-        """
-        Validate password criteria
-        """
+
         
         if not isinstance(password, str):
             return False
